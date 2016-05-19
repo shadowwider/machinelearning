@@ -61,6 +61,24 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
+%为X添加偏移量
+X = [ones(m,1) X];
+%将y转化为分类矩阵
+sy = zeros(m,num_labels);
+for i=1:m,
+  sy(i,y(i)) = 1;
+end
+H = sigmoid([ones(m,1) sigmoid(X*Theta1')] * Theta2');
+
+
+
+for i=1:m, 
+  for k=1:num_labels,
+ 
+    J = J + -sy(i,k) * log(H(i,k)) - (1-sy(i,k)) * log(1 - H(i,k));
+  end
+end
+J = J/m;
 
 
 
@@ -71,16 +89,6 @@ Theta2_grad = zeros(size(Theta2));
 
 
 
-
-
-
-
-
-
-
-
-
-% -------------------------------------------------------------
 
 % =========================================================================
 
