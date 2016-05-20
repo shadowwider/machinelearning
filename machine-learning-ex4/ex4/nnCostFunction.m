@@ -97,8 +97,8 @@ for t = 1:m,
   z3 = Theta2 * a2;
   a3 = sigmoid(z3);
   delta3 = a3 - sy(t,:)';
-  delta2 = Theta2'*delta3 .* sigmoidGradient(a2);
-  delta2 = delta2(2:end);
+  delta2 = (Theta2'*delta3)(2:end) .* sigmoidGradient(z2);
+ 
   Delta2 = Delta2 + delta3 * a2';
   Delta1 = Delta1 + delta2 * X(t,:);
 end
