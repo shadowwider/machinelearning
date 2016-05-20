@@ -71,19 +71,39 @@ end
 H = sigmoid([ones(m,1) sigmoid(X*Theta1')] * Theta2');
 
 
-
-for i=1:m, 
-  for k=1:num_labels,
+%loop方法
+%for i=1:m, 
+ % for k=1:num_labels,
  
-    J = J + -sy(i,k) * log(H(i,k)) - (1-sy(i,k)) * log(1 - H(i,k));
-  end
+  %  J = J + -sy(i,k) * log(H(i,k)) - (1-sy(i,k)) * log(1 - H(i,k));
+  %end
+%end
+%J = J/m;
+%向量化方法
+JM = sy .* log(H) + (1-sy) .* log(1-H);% 5000*10的矩阵 sum(:)求和
+J = -sum(JM(:))/m;
+%正规化部分的和 
+t1 = Theta1(:,2:end) .^ 2;
+t2 = Theta2(:,2:end) .^ 2;
+reg = lambda *(sum(t1(:))+sum(t2(:))) /2/m;
+J = J + reg;
+%反向传播算法开始
+%误差矩阵Delta初始化
+Delta1 = zeros(size(Theta1));
+Delta2 = zeros(size(Theta2));
+for t = 1:m,
+  z2 = Theta1 * X(t,:)';
+  a2 = [1;sigmoid(z2)];
+  z3 = Theta2 * a2;
+  a3 = sigmoid(z3);
+  delta3 = a3 - sy(t,:)';
+  delta2 = Theta2'*delta3 .* sigmoidGradient(a2);
+  delta2 = delta2(2:end);
+  Delta2 = Delta2 + delta3 * a2';
+  Delta1 = Delta1 + delta2 * X(t,:);
 end
-J = J/m;
-
-
-
-
-
+Theta1_grad = Delta1/m + [zeros(hidden_layer_size,1) (lambda*Theta1/m)(:,2:end)] ;
+Theta2_grad = Delta2/m+ [zeros(num_labels,1) (lambda*Theta2/m)(:,2:end)];
 
 
 
